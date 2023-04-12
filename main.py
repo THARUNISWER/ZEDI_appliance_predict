@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import datetime as datetime
+import matplotlib.pyplot as plt
+import pandas as pd
+import ast
+from datetime import datetime
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+dt_format = "%d/%m/%Y %H:%M:%S"
 
+train_file_geyser = "D:\\preprocessed_data\\geyser_train.csv"
+train_df_geyser = pd.read_csv(train_file_geyser)
+train_df_geyser = train_df_geyser[["Data_a", "Data_b", "Label"]]
+df_a = pd.DataFrame.from_dict(ast.literal_eval(train_df_geyser["Data_a"][0]))
+arr = []
+for x in df_a.index:
+    arr.append(datetime.strptime(df_a["Time"][x], dt_format))
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+plt.scatter(arr, df_a["Current"])
+df_b = pd.DataFrame.from_dict(ast.literal_eval(train_df_geyser["Data_b"][0]))
+arr = []
+print(df_b)
+for x in df_b.index:
+    arr.append(datetime.strptime(df_b["Time"][x], dt_format))
+plt.scatter(arr, df_b["Current"])
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

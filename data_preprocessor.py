@@ -10,18 +10,53 @@ output_file_geyser = "D:\\preprocessed_data\\geyser_input.csv"
 main_file1 = "D:\\RNN_Data\\Data\\Mains\\ES.052 (SN 40844202)_230208_1750_trend.csv"
 main_file2 = "D:\\RNN_Data\\Data\\Mains\\ES.053 (SN 40844202)_230216_1601_trend.csv"
 main_file3 = "D:\\RNN_Data\\Data\\Mains\\ES.054 (SN 40844202)_230227_1042_trend.csv"
-output_main_file = "D:\\preprocessed_data\\main_file.csv"
+output_main_file1 = "D:\\preprocessed_data\\train_main_file.csv"
+output_main_file2 = "D:\\preprocessed_data\\test_main_file.csv"
 
-'''
+
 # main data processing
 print("Mains file processing started...")
 main1_df = pd.read_csv(main_file1)
 main2_df = pd.read_csv(main_file2)
-main3_df = pd.read_csv(main_file3)
-main_df = pd.concat([main1_df, main2_df, main3_df])
+# main3_df = pd.read_csv(main_file3)
+# main_df = pd.concat([main1_df, main2_df, main3_df])
+main_df = main1_df
 main_df = main_df[["Start(India Standard Time)", "Vrms_AN_avg", "Irms_A_avg", "PowerP_Total_avg",  "Frequency_avg"]]
 main_df.columns = ['Start_time', 'Voltage', 'Current', 'Power', 'Frequency']
-main_df.to_csv(output_main_file)
+main_df.to_csv(output_main_file1, index=False)
+main_df = main2_df
+main_df = main_df[["Start(India Standard Time)", "Vrms_AN_avg", "Irms_A_avg", "PowerP_Total_avg",  "Frequency_avg"]]
+main_df.columns = ['Start_time', 'Voltage', 'Current', 'Power', 'Frequency']
+main_df.to_csv(output_main_file2, index=False)
+print("Database extraction phase completed :)")
+
+
+df = pd.read_csv(output_main_file1)
+print("Time updation starting..")
+print(len(df.index))
+for ind in df.index:
+    print(ind)
+    # print(df['Start_time'][ind])
+    curr_dt = datetime.datetime.strptime(df['Start_time'][ind], dt_format)
+    curr_dt -= datetime.timedelta(minutes=10, seconds=25)
+    new_dt = datetime.datetime.strftime(curr_dt, dt_format)
+    df['Start_time'][ind] = new_dt
+
+df.to_csv(output_main_file1, index=False)
+
+'''
+df = pd.read_csv(output_main_file2)
+print("Time updation starting for 2..")
+print(len(df.index))
+for ind in df.index:
+    print(ind)
+    # print(df['Start_time'][ind])
+    curr_dt = datetime.datetime.strptime(df['Start_time'][ind], dt_format)
+    curr_dt -= datetime.timedelta(minutes=10)
+    new_dt = datetime.datetime.strftime(curr_dt, dt_format)
+    df['Start_time'][ind] = new_dt
+
+df.to_csv(output_main_file2, index=False)
 print("Mains file processing completed :)")
 '''
 
@@ -54,7 +89,7 @@ for ind in geyser_df.index:
                 print("time_change: " + str(curr_dt) + " " + str(data_dt))
             else:
                 print("label change: " + str(geyser_df["Current"][ind]))
-            geyser_main_df.loc[len(geyser_main_df.index)] = [start_dt.strftime(dt_format), (curr_dt - dt_delta).strftime(dt_format), len(geyser_temp_df.index), geyser_temp_df, prev_label]
+            geyser_main_df.loc[len(geyser_main_df.index)] = [start_dt.strftime(dt_format), (curr_dt - dt_delta).strftime(dt_format), len(geyser_temp_df.index), geyser_temp_df.to_dict('dict'), prev_label]
         geyser_temp_df = pd.DataFrame(columns = ["Time", "Current", "Voltage", "Frequency", "Power Factor"])
         start_dt = data_dt
     curr_dt = data_dt + dt_delta
@@ -62,7 +97,6 @@ for ind in geyser_df.index:
                           geyser_df["Frequency"][ind], geyser_df["Power Factor"][ind]]
     prev_label = label
 
-geyser_main_df.to_csv(output_file_geyser)
+geyser_main_df.to_csv(output_file_geyser, index=False)
 print("Geyser data processing over :)")
-
 '''
