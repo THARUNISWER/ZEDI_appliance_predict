@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 target_file_geyser = "D:\\RNN_Data\\Data\\GG\\DATALOG.CSV"
 input_main_file = "D:\\preprocessed_data\\train_main_file.csv"
 
-MAX_NUM_ROWS = 100
-WINDOW_SIZE = 100
+WINDOW_SIZE = 500
+MAX_NUM_ROWS = WINDOW_SIZE
 
 geyser_df = pd.read_csv(target_file_geyser)
 geyser_df.columns = ['Time', 'Temperature', 'Humidity', 'Voltage', 'Current', 'Power', 'Energy', 'Frequency', 'Power Factor']
@@ -19,12 +19,12 @@ geyser_df = geyser_df[["Time", "Current", "Voltage", "Power", "Power Factor"]]
 main_df = pd.read_csv(input_main_file)
 
 # load json and create model
-json_file = open('model_data/geyser_model.json', 'r')
+json_file = open('model_data/geyser_model_500.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("model_data/geyser_model.h5")
+loaded_model.load_weights("model_data/geyser_model_500.h5")
 print("Loaded model from disk")
 
 # evaluate loaded model on test data
@@ -37,13 +37,14 @@ data_b = np.empty([0, MAX_NUM_ROWS], dtype=float)
 labels = np.empty(0, dtype=int)
 batch_ind = 0
 
-# given_time = '17/02/2023 11:07:19'
-given_time = '12/02/2023 12:21:54'
+given_time = '17/02/2023 11:07:19'
+# given_time = '12/02/2023 12:21:54'
 # given_time = '09/02/2023 08:13:02'
 # given_time = '09/02/2023 08:10:32'
 # given_time = '09/02/2023 11:01:26'  # G2G
 # print(main_df.loc[10, 'Start_time'])
 main_index = main_df[main_df['Start_time'] == given_time].index.values
+sub_df = None
 if len(main_index) != 0:
     print(main_index)
     sub_df = main_df[main_index[0]:(main_index[0] + WINDOW_SIZE)]

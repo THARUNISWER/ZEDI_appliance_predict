@@ -59,13 +59,14 @@ data_B = np.empty([0, MAX_NUM_ROWS], dtype=float)
 labels = np.empty(0, dtype=int)
 batch_ind = 0
 
-given_time = "09/02/2023 15:11:17"
+# given_time = "09/02/2023 15:11:17"
 # given_time = "09/02/2023 18:54:40"
 # given_time = "14/02/2023 19:13:35"
 # given_time = "14/02/2023 19:25:56"
 given_time = "11/02/2023 10:09:13"
 # print(main_df.loc[10, 'Start_time'])
 main_index = main_df[main_df['Start_time'] == given_time].index.values
+sub_df = None
 if len(main_index) != 0:
     print("main_index: " + str(main_index[0]))
     sub_df = main_df[main_index[0]:(main_index[0] + WINDOW_SIZE)]
